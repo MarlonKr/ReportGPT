@@ -2,6 +2,7 @@ import tiktoken
 import os
 import json
 import PyPDF4
+import re
 
 from GptCall import gpt_call
 from prompts import *
@@ -18,15 +19,15 @@ def clean_text_with_gpt2(text):
     return cleaned_text
 
 def extract_text_from_pdf(pdf_path,MODELS):
-    pdf_file = open(pdf_path, 'rb')
-    pdf_reader = PyPDF4.PdfFileReader(pdf_file)
-    tokens = []
-    for page_num in range(pdf_reader.numPages):
-        page = pdf_reader.getPage(page_num)
-        text = page.extractText()
-        page_tokens = list(tiktoken.encoding_for_model(MODELS["cleaning"]).encode(text))
-        tokens.extend([(token, page_num) for token in page_tokens])
-    pdf_file.close()
+    with open(pdf_path, 'rb') as pdf_file:
+        pdf_reader = PyPDF4.PdfFileReader(pdf_file)
+        tokens = []
+        for page_num in range(pdf_reader.numPages):
+            page = pdf_reader.getPage(page_num)
+            text = page.extractText()
+            page_tokens = list(tiktoken.encoding_for_model(MODELS["cleaning"]).encode(text))
+            tokens.extend([(token, page_num) for token in page_tokens])
+
     return tokens
 
 def split_into_tokens(tokens, num_tokens, overlap,MODELS):
@@ -36,34 +37,36 @@ def split_into_tokens(tokens, num_tokens, overlap,MODELS):
         chunk_pages = list(set(page_num for _, page_num in chunk_tokens))
         yield chunk_text, chunk_pages
 
-def pdf_processing(window_size, overlap, user_objective, MODELS):
+def pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir="PdfInfoGatherer/pdfs", json_dir="PdfInfoGatherer/jsons"):
 
-    pdfs = [file for file in os.listdir("PdfInfoGatherer/pdfs") if file.endswith(".pdf")]
+    pdfs = [file for file in os.listdir(pdf_dir) if file.endswith(".pdf")]
     for pdf in pdfs:
-        pdf_path = f"PdfInfoGatherer/pdfs/{pdf}"
-        tokens = extract_text_from_pdf(pdf_path,MODELS)
+        pdf_path = os.path.join(pdf_dir, pdf)
+        tokens = extract_text_from_pdf(pdf_path, MODELS)
     
-        
         print(f"===== {pdf} =====")
         iteration = 0
-        for chunk, pages in split_into_tokens(tokens, window_size, overlap,MODELS):
+        for chunk, pages in split_into_tokens(tokens, window_size, overlap, MODELS):
 
-            adjusted_pages = [page + 1 for page in pages] # adjust page numbers to start at 1 instead of 0
+            adjusted_pages = [page + 1 for page in pages]  # adjust page numbers to start at 1 instead of 0
 
-            json_dir = f'PdfInfoGatherer/jsons/{pdf}/{window_size}_{overlap}/'
+            pdf_name = pdf.split(".")[0]
+            pdf_name = re.sub(r'[\\/*?:"<>|]', '_', pdf_name)
 
-            base_json_path = f'PdfInfoGatherer/jsons/{pdf}/{window_size}_{overlap}/base/{iteration}.json'
-            # create path if it doesn't exist
-            if not os.path.exists(f"PdfInfoGatherer/jsons/{pdf}/{window_size}_{overlap}/base/"):
-                os.makedirs(f"PdfInfoGatherer/jsons/{pdf}/{window_size}_{overlap}/base/")
-            
+            final_dir = os.path.join(json_dir, pdf_name, f"{window_size}_{overlap}")
+            base_json_path = os.path.join(final_dir, "base", f"{iteration}.json")
+
+            # Create path if it doesn't exist
+            if not os.path.exists(os.path.join(final_dir, "base")):
+                os.makedirs(os.path.join(final_dir, "base"))
+
             if os.path.exists(base_json_path):
                 print(f"{base_json_path} already exists")
                 with open(base_json_path) as json_file:
                     data = json.load(json_file)
                     prepared_chunk = data['chunk']
             else:
-                prepared_chunk = clean_and_translate(chunk,MODELS)
+                prepared_chunk = clean_and_translate(chunk, MODELS)
 
                 data = {
                     'pdf': pdf,
@@ -74,10 +77,9 @@ def pdf_processing(window_size, overlap, user_objective, MODELS):
 
                 with open(base_json_path, 'w') as outfile:
                     json.dump(data, outfile)
-            
+
             prompt, system_message = get_prompt_crawl(prepared_chunk, user_objective)
             answer = gpt_call(prompt, model=MODELS["crawl"], temperature=0, system_message=system_message, memory=None, timeout=60)
-
 
             data = {
                 'pdf': pdf,
@@ -87,14 +89,13 @@ def pdf_processing(window_size, overlap, user_objective, MODELS):
                 'answer': answer,
             }
 
-            # mkdir if it doesn't exist
-            if not os.path.exists(json_dir+f"/{user_objective[:25]}"):
-                os.makedirs(json_dir+f"/{user_objective[:25]}")
-        
-            with open(json_dir+f"/{user_objective[:25]}/{iteration}.json", 'w') as outfile:
+            # Make directory if it doesn't exist
+            if not os.path.exists(os.path.join(final_dir, user_objective[:25])):
+                os.makedirs(os.path.join(final_dir, user_objective[:25]))
+
+            with open(os.path.join(final_dir, user_objective[:25], f"{iteration}.json"), 'w') as outfile:
                 json.dump(data, outfile)
-            
-            
+
             iteration += 1
             print("-----")
         
@@ -103,4 +104,4 @@ def pdf_processing(window_size, overlap, user_objective, MODELS):
 
     print("All PDFs have been processed.")
 
-    return json_dir
+    return final_dir

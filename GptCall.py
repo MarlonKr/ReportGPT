@@ -1,7 +1,6 @@
 import openai
 import tiktoken
 
-
 def gpt_call (message_input, model="gpt-3.5-turbo", temperature=0, system_message=False, memory=None, timeout=None):
         
         # Function to truncate a string to the maximum token count.

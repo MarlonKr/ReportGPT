@@ -12,6 +12,10 @@ This repository contains a Python application designed to extract relevant infor
 - `GptCall.py`: Manages API calls to OpenAI
 - `config.py`: Contains configurations for development and production environments.
 
+## TODO's
+- [] Implement a redundancy check for crawling and refining 
+
+
 ## Requirements
 
 Install the required packages using:
