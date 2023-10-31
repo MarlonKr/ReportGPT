@@ -1,0 +1,21 @@
+# Python artifacts
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environment
+venv/
+*.venv
+ENV/
+
+# macOS artifacts
+.DS_Store
+
+# Other artifacts
+*.env
+*.zip
+*.txt
+*.json
+*.pdf
+
+ContextAwareChunkSplitting.py
