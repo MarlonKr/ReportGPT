@@ -7,9 +7,9 @@ This repository contains a Python application designed to extract relevant infor
 ## Scripts
 
 - `main.py`: The entry point of the application. Coordinates the extraction and processing flow.
-- `PdfProcessing.py`: Handles PDF reading and text extraction. Also responsible for cleaning and translating text.
-- `prompts.py`: Contains predefined prompts used for GPT-3 interaction.
-- `GptCall.py`: Manages API calls to the GPT-3 service.
+- `PdfProcessing.py`: Handles PDF text extraction, cleaning, translating, as well as dumping and organizing the data into .json files.
+- `prompts.py`: Contains prompts used for LLM interaction.
+- `GptCall.py`: Manages API calls to OpenAI
 - `config.py`: Contains configurations for development and production environments.
 
 ## Requirements
