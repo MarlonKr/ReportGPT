@@ -55,15 +55,16 @@ def check_missing_answers(answer_lists, report, MODELS):
             prompt, system_message = get_prompt_self_supervising(answer, report)
             check_result = gpt_call(prompt, model=MODELS["refinement"], temperature=0, system_message=system_message, memory=None, timeout=80)
             
-            if "0" in check_result.lower():
+            if "#FALSE" in check_result.lower():
                 pages = ", ".join(map(str, answer_dict['pages']))
                 pdf = answer_dict['pdf']
                 missing_answers += f"- {answer} (Pages: {pages}, PDF: {pdf})\n"
                 
+    print(f"missing_answers:\n\n {missing_answers}")
     return missing_answers
 
 def generate_refined_report(missing_answers, report, user_objective, MODELS):
-    if missing_answers:  # If the string is not empty, it means there are missing answers.
+    if missing_answers != "": 
         new_prompt = get_prompt_refine_report(missing_answers, report, user_objective)
         refined_report = gpt_call(new_prompt, model=MODELS["refinement"], temperature=0, system_message=system_message, memory=None, timeout=120)
         

@@ -13,7 +13,7 @@ This repository contains a Python application designed to extract relevant infor
 - `config.py`: Contains configurations for development and production environments.
 
 ## TODO's
-- [] Implement a redundancy check for crawling and refining 
+- [ ] Implement a redundancy check for crawling- and refining-processes
 
 
 ## Requirements

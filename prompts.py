@@ -95,7 +95,7 @@ client is looking for: '{user_objective}'. What does the PDF snippet tell you ab
     return messages, system_message
 
 def get_prompt_self_supervising(answer, report):
-    system_message = "You are a Supervising Assistant. Your job is to check whether a certain information is present in the report. Your objective is to output a number (1 or 0) that indicates whether the information is sufficently present in the report (1) or not (0)."
+    system_message = "You are a Supervising Assistant. Your job is to check whether a certain information is present in the report. Your objective is to output a number (#TRUE or #FALSE) that indicates whether the information is sufficently present in the report (#TRUE) or not (#FALSE)."
 
     prompt = f"""Is the following information sufficently present in the report?
 
@@ -109,9 +109,10 @@ Report:
 {report}
 '''
 
-Take a deep breath and work on this question step-by-step. Afterwards, conclude by either writing a 1 (= "report contains sufficient amount of the information") or 0 (= "significant information is missing in report, revision necessary").
+Take a deep breath and work on this question step-by-step. Afterwards, conclude by either writing a '#TRUE' (= "report contains sufficient amount of the information") or '#FALSE' (= "significant information is missing in report, revision necessary").
 
-Example: [Your reasoning about whether the answer is present in the report or not.], therefore significant information is missing in report, revision necessary. I answer with 0.
+Example: [Your reasoning about whether the answer is present in the report or not.], therefore significant information is missing in report, revision necessary. I answer with #FALSE.
+Mind the hashtag before the TRUE or FALSE.
 """
     return prompt, system_message
 
