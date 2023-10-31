@@ -117,7 +117,7 @@ Mind the hashtag before the TRUE or FALSE.
     return prompt, system_message
 
 def get_prompt_report(answer_lists, user_objective, format):
-    system_message = "You are a report creator assistant. Your job is to create a report using the extracted information from PDFs to a given query. The query might be a question, a keyword, a topic of interest, a certain type of information type or something else. If you are not sure about an information, rather add it to the report than not. Don't do smalltalk nor introduce your answer, just answer with the final report. The report should be structured, readable, throughout and extensive."
+    system_message = f"You are a {format} creator assistant. Your job is to create a report using the extracted information from PDFs to a given query. The query might be a question, a keyword, a topic of interest, a certain type of information type or something else. If you are not sure about an information, rather add it to the report than not. Don't do smalltalk nor introduce your answer, just answer with the final {format}. The {format} should be structured, readable, throughout and extensive."
 
 
     answer_list = ""
@@ -129,7 +129,7 @@ def get_prompt_report(answer_lists, user_objective, format):
             answer_list += f"- {answer} (Pages: {pages}, PDF: {pdf})\n"
         answer_list += "\n"
 
-    prompt = f"""Hello report creator assistant, it's nice to have you.
+    prompt = f"""Hello {format} creator assistant, it's nice to have you.
 What now follows is information that has been extracted from PDFs to the query: {user_objective}
 Cite the respective pages to each of the extracted information. If only one pdf is being mentioned, also cite the pdf only once.
 Please be as precise, accurate and throughout as possible or else I will get punished for your mistakes by my boss.
@@ -145,29 +145,22 @@ Please, use this extracted information and bring it into a readable and structur
     
     return prompt, system_message
 
-def get_prompt_refine_report(missing_answer_list, report, user_objective):
-    """missing_answer_list = ""
-    
-    for answer_dict in missing_answers:
-        answer = answer_dict['answer'] 
-        pages = ", ".join(map(str, answer_dict['pages']))
-        pdf = answer_dict['pdf']
-        missing_answer_list += f"- {answer} (Pages: {pages}, PDF: {pdf})\n"""
-    
-    prompt = f"""Hello report creator assistant, it seems some information was missing in the initial report related to the user's interest of: {user_objective}.
-Please refine the existing report by integrating the following missing information into the report so we have a complete report:
+def get_prompt_refine_report(missing_answer_list, report, user_objective, format):
+ 
+    prompt = f"""Hello {format} creator assistant, it seems some information was missing in the initial report related to the user's interest of: {user_objective}.
+Please refine the existing {format} by integrating the following missing information into it so we have a complete {format}:
 
 Missing information:
 '''
 {missing_answer_list}
 '''
 
-Report:
+{format}:
 {report}
 
 Please be as precise, accurate and throughout as possible or else I will get punished for your mistakes by my boss.
 
-Only reply with the refined report, nothing else.
+Only reply with the refined {format}, nothing else.
 """
     return prompt
 

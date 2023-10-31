@@ -12,8 +12,10 @@ This repository contains a Python application designed to extract relevant infor
 - `GptCall.py`: Manages API calls to OpenAI
 - `config.py`: Contains configurations for development and production environments.
 
-## TODO's
+## Ideas and TODO's
 - [ ] Implement a redundancy check for crawling- and refining-processes
+- [ ] option to merge multiple pdf reports into one report
+- [ ] incorporate missed answers iteratevly 
 
 
 ## Requirements
@@ -27,11 +29,10 @@ pip install -r requirements.txt
 
 1. Clone the repository.
 2. Navigate to the project directory and run `pip install -r requirements.txt`.
+3. Set the OpenAI API key in a `.env` file as `OPENAI_API_KEY=your-api-key-here`.
+4. place a single or multiple .pdf file(s) into the "PdfInfoGatherer" directory.
 3. Run `python main.py`.
 
-## Configuration
-
-Set the OpenAI API key in a `.env` file as `OPENAI_API_KEY=your-api-key-here`.
 
 ## Contributing
 

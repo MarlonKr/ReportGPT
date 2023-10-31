@@ -11,12 +11,12 @@ from PdfProcessing import pdf_processing
 
 openai.api_key = config('OPENAI_API_KEY')
 
-def save_report(answer, user_objective):
+def save_report(answer, user_objective, format, pdf_name):
     if not os.path.exists("PdfInfoGatherer/reports"):
         os.makedirs("PdfInfoGatherer/reports")
-    with open(f'PdfInfoGatherer/reports/report_{user_objective}.txt', 'w') as outfile:
+    with open(f'PdfInfoGatherer/reports/{pdf_name}_{format}_{user_objective}.txt', 'w') as outfile:
         outfile.write(answer)
-        print(f"PdfInfoGatherer/reports/report_{user_objective}.txt has been created")
+        print(f"PdfInfoGatherer/reports/{pdf_name}_{format}_{user_objective}.txt', 'w' has been created")
 
 def chunk_in_token_limit_lists(answer_list, tokenizer, token_limit):
     token_count = 0
@@ -55,7 +55,7 @@ def check_missing_answers(answer_lists, report, MODELS):
             prompt, system_message = get_prompt_self_supervising(answer, report)
             check_result = gpt_call(prompt, model=MODELS["refinement"], temperature=0, system_message=system_message, memory=None, timeout=80)
             
-            if "#FALSE" in check_result.lower():
+            if "#FALSE" in check_result:
                 pages = ", ".join(map(str, answer_dict['pages']))
                 pdf = answer_dict['pdf']
                 missing_answers += f"- {answer} (Pages: {pages}, PDF: {pdf})\n"
@@ -63,14 +63,14 @@ def check_missing_answers(answer_lists, report, MODELS):
     print(f"missing_answers:\n\n {missing_answers}")
     return missing_answers
 
-def generate_refined_report(missing_answers, report, user_objective, MODELS):
+def generate_refined_report(missing_answers, report, user_objective, format, pdf_name, MODELS):
     if missing_answers != "": 
-        new_prompt = get_prompt_refine_report(missing_answers, report, user_objective)
+        new_prompt = get_prompt_refine_report(missing_answers, report, user_objective, format)
         refined_report = gpt_call(new_prompt, model=MODELS["refinement"], temperature=0, system_message=system_message, memory=None, timeout=120)
         
-        with open(f'PdfInfoGatherer/reports/report_{user_objective}_refined.txt', 'w') as outfile:
+        with open(f'PdfInfoGatherer/reports/{pdf_name}_{format}_{user_objective}_refined.txt', 'w') as outfile:
             outfile.write(refined_report)
-            print(f"PdfInfoGatherer/reports/report_{user_objective}.txt has been updated to report_{user_objective}_refined.txt")
+            print(f"{pdf_name}_{format}_{user_objective}.txt has been updated to {pdf_name}_{format}_{user_objective}_refined.txt")
     
     else:
         print("No missing answers found. No need to refine the report.")
@@ -132,38 +132,39 @@ token_limit = 15000 # token limit for very large files, can stay like this
 # Iterate through PDFs and process content; create jsons with answers
 json_dir = "PdfInfoGatherer/jsons"
 pdf_dir = "PdfInfoGatherer/pdfs"
-final_dir = pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir=pdf_dir, json_dir=json_dir)
+final_dirs, pdf_names = pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir=pdf_dir, json_dir=json_dir)
 
+print(f"final_dirs: {final_dirs}")
+print(f"pdf_names: {pdf_names}")
 
 proceed = input("Do you want to proceed? (y/n): ")
 if proceed == "n":
     print("All done.")
     exit()
-else:
-    # create answer_list by removing jsons with "not relevant" in the answer, thus irrelevant answers
+
+for final_dir, pdf_name in zip(final_dirs, pdf_names):
     answer_list = create_answer_list_and_clean_jsons(final_dir, user_objective)
 
-# check token count of answer_list and split into multiple answer_lists if token count is too high for model token limit
-answer_lists = chunk_in_token_limit_lists(answer_list, tokenizer_crawl, token_limit)
+    # check token count of answer_list and split into multiple answer_lists if token count is too high for model token limit
+    answer_lists = chunk_in_token_limit_lists(answer_list, tokenizer_crawl, token_limit)
 
-# TODO for all lists in answer_lists: create report, then combine all reports into one report
-prompt, system_message = get_prompt_report(answer_lists, user_objective,format)
-answer = gpt_call(prompt, model=MODELS["report_initial"], temperature=0.3, system_message=system_message, memory=None, timeout=300)
+    # TODO for all lists in answer_lists: create report, then combine all reports into one report
+    prompt, system_message = get_prompt_report(answer_lists, user_objective,format)
+    answer = gpt_call(prompt, model=MODELS["report_initial"], temperature=0.3, system_message=system_message, memory=None, timeout=300)
 
-print(f"Report: \n###\n {answer} \n###n")
+    print(f"Report: \n###\n {answer} \n###n")
 
-save_report(answer, user_objective)
+    save_report(answer, user_objective, format, pdf_name)
 
-proceed = input("Do you want to look for missing answers and refine the report? (y/n): ")
+    proceed = input("Do you want to look for missing answers and refine the report? (y/n): ")
 
-if proceed == "n":
-    print("All done.")
-elif proceed == "y":
-    missing_answers = check_missing_answers(answer_lists, answer, MODELS)
-    generate_refined_report(missing_answers, answer, user_objective, MODELS)
+    if proceed == "n":
+        print("done.")
+    elif proceed == "y":
+        missing_answers = check_missing_answers(answer_lists, answer, MODELS)
+        generate_refined_report(missing_answers, answer, user_objective, format, pdf_name, MODELS)
+        print("done.")
+    else:
+        print("Invalid input. All done.")
 
-    print("All done.")
-else:
-    print("Invalid input. All done.")
-
-# TODO make prints more readable 
+    # TODO make prints more readable 

@@ -39,35 +39,40 @@ def split_into_tokens(tokens, num_tokens, overlap,MODELS):
 
 def pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir="PdfInfoGatherer/pdfs", json_dir="PdfInfoGatherer/jsons"):
     # create pdf_dir if it doesn't exist
+
     if not os.path.exists(pdf_dir):
         os.makedirs(pdf_dir)
-
 
     pdfs = [file for file in os.listdir(pdf_dir) if file.endswith(".pdf")]
     if len(pdfs) == 0:
         print("No PDFs found in the pdfs directory. Please add some PDFs and try again.")
         exit()
 
+    final_dirs = []
+
+    pdf_names = []
 
     for pdf in pdfs:
         pdf_path = os.path.join(pdf_dir, pdf)
         tokens = extract_text_from_pdf(pdf_path, MODELS)
-    
+
+        pdf_name = pdf.split(".")[0]
+        pdf_name = re.sub(r'[\\/*?:"<>|]', '_', pdf_name)
+        pdf_names.append(pdf_name)
+        final_dir = os.path.join(json_dir, pdf_name, f"{window_size}_{overlap}")
+        final_dirs.append(final_dir)
+
         print(f"===== {pdf} =====")
         iteration = 0
         for chunk, pages in split_into_tokens(tokens, window_size, overlap, MODELS):
 
             adjusted_pages = [page + 1 for page in pages]  # adjust page numbers to start at 1 instead of 0
-
-            pdf_name = pdf.split(".")[0]
-            pdf_name = re.sub(r'[\\/*?:"<>|]', '_', pdf_name)
-
-            final_dir = os.path.join(json_dir, pdf_name, f"{window_size}_{overlap}")
-            base_json_path = os.path.join(final_dir, "base", f"{iteration}.json")
-
+            
             # Create path if it doesn't exist
             if not os.path.exists(os.path.join(final_dir, "base")):
                 os.makedirs(os.path.join(final_dir, "base"))
+
+            base_json_path = os.path.join(final_dir, "base", f"{iteration}.json")
 
             if os.path.exists(base_json_path):
                 print(f"{base_json_path} already exists")
@@ -113,4 +118,4 @@ def pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir="PdfInf
 
     print("All PDFs have been processed.")
 
-    return final_dir
+    return final_dirs, pdf_names
