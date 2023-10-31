@@ -38,8 +38,17 @@ def split_into_tokens(tokens, num_tokens, overlap,MODELS):
         yield chunk_text, chunk_pages
 
 def pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir="PdfInfoGatherer/pdfs", json_dir="PdfInfoGatherer/jsons"):
+    # create pdf_dir if it doesn't exist
+    if not os.path.exists(pdf_dir):
+        os.makedirs(pdf_dir)
+
 
     pdfs = [file for file in os.listdir(pdf_dir) if file.endswith(".pdf")]
+    if len(pdfs) == 0:
+        print("No PDFs found in the pdfs directory. Please add some PDFs and try again.")
+        exit()
+
+
     for pdf in pdfs:
         pdf_path = os.path.join(pdf_dir, pdf)
         tokens = extract_text_from_pdf(pdf_path, MODELS)
