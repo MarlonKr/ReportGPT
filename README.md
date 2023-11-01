@@ -19,7 +19,7 @@ The main idea is to iterate through chunks of the pdf(s) and "note down", so to 
 
 Install the required packages using:
 
->pip install -r requirements.txt
+`pip install -r requirements.txt`
 
 
 ## Quick Start
@@ -43,10 +43,10 @@ The process inherits several token-consuming but quality-enhancing approaches:
 
 ## User Input
 
-- *Chunk size*: The size of the token window that iterates through the PDF
-- *Overlap size*: The size of the overlapping tokens which are used to catch otherwise missing context
-- *Topic of interest*: The information that the user is looking for. Can be quite specific. 
-- *Format*: The final format of the output. A 'report' format is default, can be changed to any other output format (e.g. table, bullet points, or even a poem).
+- **Chunk size**: The size of the token window that iterates through the PDF
+- **Overlap size**: The size of the overlapping tokens which are used to catch otherwise missing context
+- **Topic of interest**: The information that the user is looking for. Can be quite specific. 
+- **Format**: The final format of the output. A 'report' format is default, can be changed to any other output format (e.g. table, bullet points, or even a poem).
 
 
 ## Ideas and TODO's
