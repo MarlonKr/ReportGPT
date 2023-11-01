@@ -14,7 +14,7 @@ ENV/
 # Other artifacts
 *.env
 *.zip
-*.txt
+*report_*.txt
 *.json
 *.pdf
 
