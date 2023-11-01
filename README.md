@@ -5,21 +5,6 @@
 This repository contains a Python application designed to extract relevant information from PDF files.
 The main idea is to iterate through chunks of the pdf(s) and "note down", so to say, what's there about the user's query. 
 
-## Features
-
-The process inherits several token-consuming but quality-enhancing approaches:
-
-- Chunk cleaning from PDF artifacts
-- Chunk translation into English (for consistency and best LLM performance)
-- Report refinement (second iteration that checks for missing information in the final report)
-- Reundancy removal (planned)
-
-## User Input
-
-- Chunk size: The size of the token window that iterates through the PDF
-- Overlap size: The size of the overlapping tokens which are used to catch otherwise missing context
-- Topic of interest: The information that the user is looking for. Can be quite specific. 
-- Format: The final format of the output. A 'report' format is default, can be changed to any other output format (e.g. table, bullet points, or even a poem).
 
 ## Scripts
 
@@ -28,6 +13,7 @@ The process inherits several token-consuming but quality-enhancing approaches:
 - `prompts.py`: Holds the prompts used for LLM interaction.
 - `GptCall.py`: Manages API calls to OpenAI
 - `config.py`: Contains configurations for development and production environments.
+
 
 ## Ideas and TODO's
 - [ ] Implement redundancy check for crawling and refining processes
@@ -53,6 +39,24 @@ pip install -r requirements.txt
 3. Run `python main.py`.
 
 
+## Features
+
+The process inherits several token-consuming but quality-enhancing approaches:
+
+- Chunk cleaning from PDF artifacts
+- Chunk translation into English (for consistency and best LLM performance)
+- Report refinement (second iteration that checks for missing information in the final report)
+- Reundancy removal (planned)
+
+
+## User Input
+
+- *Chunk size*: The size of the token window that iterates through the PDF
+- *Overlap size*: The size of the overlapping tokens which are used to catch otherwise missing context
+- *Topic of interest*: The information that the user is looking for. Can be quite specific. 
+- *Format*: The final format of the output. A 'report' format is default, can be changed to any other output format (e.g. table, bullet points, or even a poem).
+
+
 ## Contributing
 
 1. Fork the repository.
@@ -60,6 +64,7 @@ pip install -r requirements.txt
 3. Commit your changes (`git commit -m 'Add some fooBar'`).
 4. Push to the branch (`git push origin feature/fooBar`).
 5. Create a new Pull Request.
+
 
 ## License
 
