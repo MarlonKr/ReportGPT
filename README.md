@@ -15,14 +15,6 @@ The main idea is to iterate through chunks of the pdf(s) and "note down", so to 
 - `config.py`: Contains configurations for development and production environments.
 
 
-## Ideas and TODO's
-- [ ] Implement redundancy check for crawling and refining processes
-- [ ] Allow multiple PDF reports to be merged into a single report
-- [ ] Incorporate missed answers iteratively 
-- [ ] Translate user input (if not in English)
-- [ ] Report output translation (if needed)
-
-
 ## Requirements
 
 Install the required packages using:
@@ -55,6 +47,14 @@ The process inherits several token-consuming but quality-enhancing approaches:
 - *Overlap size*: The size of the overlapping tokens which are used to catch otherwise missing context
 - *Topic of interest*: The information that the user is looking for. Can be quite specific. 
 - *Format*: The final format of the output. A 'report' format is default, can be changed to any other output format (e.g. table, bullet points, or even a poem).
+
+
+## Ideas and TODO's
+- [ ] Implement redundancy check for crawling and refining processes
+- [ ] Allow multiple PDF reports to be merged into a single report
+- [ ] Incorporate missed answers iteratively 
+- [ ] Translate user input (if not in English)
+- [ ] Report output translation (if needed)
 
 
 ## Contributing
