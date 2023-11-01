@@ -75,7 +75,6 @@ def generate_refined_report(missing_answers, report, user_objective, format, pdf
     else:
         print("No missing answers found. No need to refine the report.")
 
-
 def create_answer_list_and_clean_jsons(json_dir, user_objective):
     answer_list = []
 
@@ -116,6 +115,7 @@ except ValueError:
 
 
 user_objective = input("Enter the topic of interest: ")
+
 format = input("Enter the format you want the report to be in (standard is 'report'): ") or "report"
 
 # Models
@@ -126,12 +126,15 @@ MODELS = {
     "crawl": "gpt-3.5-turbo",
 }
 
+# Tokenizer initialization
 tokenizer_crawl = tiktoken.encoding_for_model(MODELS["crawl"])
 token_limit = 15000 # token limit for very large files, can stay like this
 
-# Iterate through PDFs and process content; create jsons with answers
+# Directories
 json_dir = "PdfInfoGatherer/jsons"
 pdf_dir = "PdfInfoGatherer/pdfs"
+
+# Iterate through PDFs and process content; create jsons with answers
 final_dirs, pdf_names = pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir=pdf_dir, json_dir=json_dir)
 
 print(f"final_dirs: {final_dirs}")
@@ -141,6 +144,7 @@ proceed = input("Do you want to proceed? (y/n): ")
 if proceed == "n":
     print("All done.")
     exit()
+
 
 for final_dir, pdf_name in zip(final_dirs, pdf_names):
     answer_list = create_answer_list_and_clean_jsons(final_dir, user_objective)
@@ -152,7 +156,7 @@ for final_dir, pdf_name in zip(final_dirs, pdf_names):
     prompt, system_message = get_prompt_report(answer_lists, user_objective,format)
     answer = gpt_call(prompt, model=MODELS["report_initial"], temperature=0.3, system_message=system_message, memory=None, timeout=300)
 
-    print(f"Report: \n###\n {answer} \n###n")
+    print(f"{format}: \n###\n {answer} \n###n")
 
     save_report(answer, user_objective, format, pdf_name)
 
@@ -160,6 +164,7 @@ for final_dir, pdf_name in zip(final_dirs, pdf_names):
 
     if proceed == "n":
         print("done.")
+
     elif proceed == "y":
         missing_answers = check_missing_answers(answer_lists, answer, MODELS)
         generate_refined_report(missing_answers, answer, user_objective, format, pdf_name, MODELS)
@@ -167,4 +172,13 @@ for final_dir, pdf_name in zip(final_dirs, pdf_names):
     else:
         print("Invalid input. All done.")
 
-    # TODO make prints more readable 
+
+    # TODO give user option to merge all reports into one report
+    """
+    if len(final_dirs) > 1:
+        merge = input("Do you want to merge all reports into one report? (y/n): ")
+        if merge == "y":
+            merge = True
+            print("Merging reports...")
+        else:
+            print("Not merging reports. Proceeding...")"""

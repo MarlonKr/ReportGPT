@@ -14,8 +14,8 @@ This repository contains a Python application designed to extract relevant infor
 
 ## Ideas and TODO's
 - [ ] Implement a redundancy check for crawling- and refining-processes
-- [ ] option to merge multiple pdf reports into one report
-- [ ] incorporate missed answers iteratevly 
+- [ ] Option to merge multiple pdf reports into one report
+- [ ] Incorporate missed answers iteratively 
 
 
 ## Requirements
