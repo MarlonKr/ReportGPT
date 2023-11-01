@@ -1,0 +1,1 @@
+Place your PDF files in here. After the first run, there will appear a "processed" folder in which you can put the files you don't need anymore. Or just delete them.
