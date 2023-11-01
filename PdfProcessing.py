@@ -44,7 +44,7 @@ def pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir="PdfInf
         os.makedirs(pdf_dir)
 
     pdfs = [file for file in os.listdir(pdf_dir) if file.endswith(".pdf")]
-    if len(pdfs) == 0:
+    if not pdfs:
         print("No PDFs found in the pdfs directory. Please add some PDFs and try again.")
         exit()
 
@@ -56,8 +56,7 @@ def pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir="PdfInf
         pdf_path = os.path.join(pdf_dir, pdf)
         tokens = extract_text_from_pdf(pdf_path, MODELS)
 
-        pdf_name = pdf.split(".")[0]
-        pdf_name = re.sub(r'[\\/*?:"<>|]', '_', pdf_name)
+        pdf_name = re.sub(r'[\\/*?:"<>|]', '_', pdf.split(".")[0])
         pdf_names.append(pdf_name)
         final_dir = os.path.join(json_dir, pdf_name, f"{window_size}_{overlap}")
         final_dirs.append(final_dir)
@@ -93,7 +92,7 @@ def pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir="PdfInf
                     json.dump(data, outfile)
 
             prompt, system_message = get_prompt_crawl(prepared_chunk, user_objective)
-            answer = gpt_call(prompt, model=MODELS["crawl"], temperature=0, system_message=system_message, memory=None, timeout=60)
+            answer = gpt_call(prompt, model=MODELS["crawl"], temperature=0, system_message=system_message, memory=None, timeout=25)
 
             data = {
                 'pdf': pdf,

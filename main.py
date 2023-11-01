@@ -11,6 +11,21 @@ from PdfProcessing import pdf_processing
 
 openai.api_key = config('OPENAI_API_KEY')
 
+def generate_merged_report(reports, model):
+    prompt, system_message = get_prompt_merge_reports(reports, user_objective, format)
+    merged_report = gpt_call(prompt, model=model, temperature=0, system_message=system_message, memory=None, timeout=200)
+
+    return merged_report
+
+def generate_inital_report(answer_set, user_objective, format, pdf_name, model):
+    prompt, system_message = get_prompt_report(answer_set, user_objective,format)
+    answer = gpt_call(prompt, model=model, temperature=0.3, system_message=system_message, memory=None, timeout=200)
+    save_report(answer, user_objective, format, pdf_name)
+
+    print(f"{format}: \n###\n {answer} \n###n")
+
+    return answer
+
 def save_report(answer, user_objective, format, pdf_name):
     if not os.path.exists("PdfInfoGatherer/reports"):
         os.makedirs("PdfInfoGatherer/reports")
@@ -46,13 +61,13 @@ def chunk_in_token_limit_lists(answer_list, tokenizer, token_limit):
 
     return answer_lists
 
-def check_missing_answers(answer_lists, report, MODELS):
+def check_missing_answers(answer_lists, report, format, MODELS):
     missing_answers = ""
     
     for answer_list in answer_lists:
         for answer_dict in answer_list:
             answer = answer_dict['answer']
-            prompt, system_message = get_prompt_self_supervising(answer, report)
+            prompt, system_message = get_prompt_self_supervising(answer, report, format)
             check_result = gpt_call(prompt, model=MODELS["refinement"], temperature=0, system_message=system_message, memory=None, timeout=80)
             
             if "#FALSE" in check_result:
@@ -66,14 +81,18 @@ def check_missing_answers(answer_lists, report, MODELS):
 def generate_refined_report(missing_answers, report, user_objective, format, pdf_name, MODELS):
     if missing_answers != "": 
         new_prompt = get_prompt_refine_report(missing_answers, report, user_objective, format)
-        refined_report = gpt_call(new_prompt, model=MODELS["refinement"], temperature=0, system_message=system_message, memory=None, timeout=120)
+        refined_report = gpt_call(new_prompt, model=MODELS["refinement"], temperature=0, system_message=False, memory=None, timeout=120)
         
         with open(f'PdfInfoGatherer/reports/{pdf_name}_{format}_{user_objective}_refined.txt', 'w') as outfile:
             outfile.write(refined_report)
             print(f"{pdf_name}_{format}_{user_objective}.txt has been updated to {pdf_name}_{format}_{user_objective}_refined.txt")
     
+        return refined_report
+
     else:
         print("No missing answers found. No need to refine the report.")
+        return report
+
 
 def create_answer_list_and_clean_jsons(json_dir, user_objective):
     answer_list = []
@@ -120,7 +139,7 @@ format = input("Enter the format you want the report to be in (standard is 'repo
 
 # Models
 MODELS = {
-    "report_initial": "gpt-3.5-turbo-16k",
+    "reporting": "gpt-3.5-turbo-16k",
     "refinement": "gpt-3.5-turbo-16k",
     "cleaning": "gpt-3.5-turbo",
     "crawl": "gpt-3.5-turbo",
@@ -145,42 +164,56 @@ if proceed == "n":
     print("All done.")
     exit()
 
-
+reports_list = []
 for final_dir, pdf_name in zip(final_dirs, pdf_names):
     answer_list = create_answer_list_and_clean_jsons(final_dir, user_objective)
 
     # check token count of answer_list and split into multiple answer_lists if token count is too high for model token limit
     answer_lists = chunk_in_token_limit_lists(answer_list, tokenizer_crawl, token_limit)
 
-    # TODO for all lists in answer_lists: create report, then combine all reports into one report
-    prompt, system_message = get_prompt_report(answer_lists, user_objective,format)
-    answer = gpt_call(prompt, model=MODELS["report_initial"], temperature=0.3, system_message=system_message, memory=None, timeout=300)
-
-    print(f"{format}: \n###\n {answer} \n###n")
-
-    save_report(answer, user_objective, format, pdf_name)
-
+    if len(answer_lists) > 1:
+        temp_reports = []
+        for answer_set in answer_lists:
+            if not answer_set:  # Skip empty answer_set
+                print("Skipping empty answer_set...")
+                continue
+            temp_report = generate_inital_report(answer_set, user_objective, format, pdf_name, MODELS["reporting"])
+            temp_reports.append(temp_report)
+        
+        report = generate_merged_report(temp_reports, MODELS["reporting"])
+    else:
+        if answer_lists[0]:  # Only proceed if not empty
+            report = generate_inital_report(answer_lists[0], user_objective, format, pdf_name, MODELS["reporting"])
+        else:
+            continue 
+    
+    # append initial_report to reports_list
+            
     proceed = input("Do you want to look for missing answers and refine the report? (y/n): ")
 
     if proceed == "n":
         print("done.")
 
     elif proceed == "y":
-        missing_answers = check_missing_answers(answer_lists, answer, MODELS)
-        generate_refined_report(missing_answers, answer, user_objective, format, pdf_name, MODELS)
+        missing_answers = check_missing_answers(answer_lists, report, format, MODELS)
+        report = generate_refined_report(missing_answers, report, user_objective, format, pdf_name, MODELS)
         print("done.")
     else:
-        print("Invalid input. All done.")
-
-    # TODO when no info is found, skip rather than create fake report! 
-    # 
-    # TODO give user option to merge all reports into one report
-    """
-    if len(final_dirs) > 1:
-        merge = input("Do you want to merge all reports into one report? (y/n): ")
-        if merge == "y":
-            merge = True
-            print("Merging reports...")
-        else:
-            print("Not merging reports. Proceeding...")"""
+        print("Invalid input.")
     
+    reports_list.append(report)
+        
+if len(reports_list) > 1:
+    merge = input("Do you want to merge all reports into one report? (y/n): ")
+    if merge == "y":
+        print("Merging reports...")
+        merged_report = generate_merged_report(reports_list, MODELS["reporting"])
+
+        with open(f'PdfInfoGatherer/reports/{pdf_name}_{format}_{user_objective}_merged.txt', 'w') as outfile:
+            outfile.write(merged_report)
+            print(f"{pdf_name}_{format}_{user_objective}.txt has been updated to {pdf_name}_{format}_{user_objective}_merged.txt")
+
+        
+    else:
+        print("Not merging reports. Proceeding...")
+

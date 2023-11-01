@@ -94,40 +94,38 @@ client is looking for: '{user_objective}'. What does the PDF snippet tell you ab
 
     return messages, system_message
 
-def get_prompt_self_supervising(answer, report):
-    system_message = "You are a Supervising Assistant. Your job is to check whether a certain information is present in the report. Your objective is to output a number (#TRUE or #FALSE) that indicates whether the information is sufficently present in the report (#TRUE) or not (#FALSE)."
+def get_prompt_self_supervising(answer, report, format):
+    system_message = f"You are a Supervising Assistant. Your job is to check whether a certain information is present in the {format}. Your objective is to output a number (#TRUE or #FALSE) that indicates whether the information is sufficently present in the {format} (#TRUE) or not (#FALSE)."
 
-    prompt = f"""Is the following information sufficently present in the report?
+    prompt = f"""Is the following information sufficently present in the {format}?
 
 Information to check:
 '''
 {answer}
 '''
 
-Report:
+{format}:
 '''
 {report}
 '''
 
-Take a deep breath and work on this question step-by-step. Afterwards, conclude by either writing a '#TRUE' (= "report contains sufficient amount of the information") or '#FALSE' (= "significant information is missing in report, revision necessary").
+Take a deep breath and work on this question step-by-step. Afterwards, conclude by either writing a '#TRUE' (= "{format} contains sufficient amount of the information") or '#FALSE' (= "significant information is missing in {format}, revision necessary").
 
-Example: [Your reasoning about whether the answer is present in the report or not.], therefore significant information is missing in report, revision necessary. I answer with #FALSE.
+Example: [Your reasoning about whether the answer is present in the {format} or not.], therefore significant information is missing in {format}, revision necessary. I answer with #FALSE.
 Mind the hashtag before the TRUE or FALSE.
 """
     return prompt, system_message
 
-def get_prompt_report(answer_lists, user_objective, format):
-    system_message = f"You are a {format} creator assistant. Your job is to create a report using the extracted information from PDFs to a given query. The query might be a question, a keyword, a topic of interest, a certain type of information type or something else. If you are not sure about an information, rather add it to the report than not. Don't do smalltalk nor introduce your answer, just answer with the final {format}. The {format} should be structured, readable, throughout and extensive."
-
+def get_prompt_report(answer_set, user_objective, format):
+    system_message = f"You are a {format} creator assistant. Your job is to create a {format} using the extracted information from PDFs to a given query. The query might be a question, a keyword, a topic of interest, a certain type of information type or something else. If you are not sure about an information, rather add it to the {format} than not. Don't do smalltalk nor introduce your answer, just answer with the final {format}. The {format} should be structured, readable, throughout and extensive."
 
     answer_list = ""
-    for answer_group in answer_lists:
-        for answer_dict in answer_group:
-            answer = answer_dict['answer']
-            pages = ", ".join(map(str, answer_dict['pages']))
-            pdf = answer_dict['pdf']
-            answer_list += f"- {answer} (Pages: {pages}, PDF: {pdf})\n"
-        answer_list += "\n"
+    for answer_dict in answer_set:
+        answer = answer_dict['answer']
+        pages = ", ".join(map(str, answer_dict['pages']))
+        pdf = answer_dict['pdf']
+        answer_list += f"- {answer} (Pages: {pages}, PDF: {pdf})\n"
+    answer_list += "\n"
 
     prompt = f"""Hello {format} creator assistant, it's nice to have you.
 What now follows is information that has been extracted from PDFs to the query: {user_objective}
@@ -140,17 +138,17 @@ Extracted information:
 {answer_list}
 '''
 
-Please, use this extracted information and bring it into a readable and structured {format}.
+Use this extracted information and bring it into a readable and structured {format}. Pleaes make sure to don't forget any information, because I will get punished for your mistakes by my boss.
 """
     
     return prompt, system_message
 
 def get_prompt_refine_report(missing_answer_list, report, user_objective, format):
  
-    prompt = f"""Hello {format} creator assistant, it seems some information was missing in the initial report related to the user's interest of: {user_objective}.
+    prompt = f"""Hello {format} creator assistant, it seems some information was missing in the initial {format} related to the user's interest of: {user_objective}.
 Please refine the existing {format} by integrating the following missing information into it so we have a complete {format}:
 
-Missing information:
+Potentially missing information:
 '''
 {missing_answer_list}
 '''
@@ -158,7 +156,7 @@ Missing information:
 {format}:
 {report}
 
-Please be as precise, accurate and throughout as possible or else I will get punished for your mistakes by my boss.
+When incorporating be as precise, accurate and throughout as possible, or I will be punished by my boss for your mistakes. 
 
 Only reply with the refined {format}, nothing else.
 """
@@ -170,4 +168,23 @@ def get_prompt_clean_and_translate(text):
 
     prompt = f"Please clean and translate the following text into English if it's written in another language:\n'''{text}'''' \nOnly reply with the cleaned and translated text, nothing else"
 
+    return prompt, system_message
+
+def get_prompt_merge_reports(reports_list, user_objective, format):
+    system_message = f"You are a {format} creator assistant. Your job is to merge the given {format}(s) into a single one."
+
+    reports = ""
+    for report in reports_list:
+        reports += f"'''{report}'''\n\n"
+
+    prompt = f"""Hello {format} creator assistant, it's nice to have you. 
+What now follows are the {format}(s) that have been created by different {format} creator assistants.
+Please merge them into one {format}.
+
+{format}(s):
+{reports}
+
+Please, use these {format}s and bring them into a readable and structured {format}. Pleaes make sure to don't forget any information, because I will get punished for your mistakes by my boss.
+"""
+    
     return prompt, system_message
