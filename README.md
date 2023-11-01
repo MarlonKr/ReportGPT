@@ -19,7 +19,7 @@ The main idea is to iterate through chunks of the pdf(s) and "note down", so to 
 
 Install the required packages using:
 
-pip install -r requirements.txt
+>pip install -r requirements.txt
 
 
 ## Quick Start
