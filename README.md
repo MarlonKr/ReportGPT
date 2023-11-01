@@ -2,8 +2,8 @@
 
 ## Overview
 
-This repository contains a Python application designed to extract relevant information from PDF files.
-The main idea is to iterate through chunks of the pdf(s) and "note down", so to say, what's there about the user's query. 
+This is a Python application designed to extract relevant information from PDF files.
+The main idea is to iterate through chunks of the pdf(s) and "note down", so to say, what's there about the user's query and report it in a user specified format.
 
 
 ## Scripts
@@ -37,8 +37,8 @@ The process inherits several token-consuming but quality-enhancing approaches:
 
 - Chunk cleaning from PDF artifacts
 - Chunk translation into English (for consistency and best LLM performance)
-- Report refinement (second iteration that checks for missing information in the final report)
-- Reundancy removal (planned)
+- Second iteration refinement (checks for missing information and incorporates it)
+- Reundancy removal (remove reundancies before writing the final report; planned)
 
 
 ## User Input
@@ -50,10 +50,12 @@ The process inherits several token-consuming but quality-enhancing approaches:
 
 
 ## Ideas and TODO's
+- [ ] Provide user interface 
+- [ ] Host via Flask
 - [ ] Implement redundancy check for crawling and refining processes
-- [ ] Allow multiple PDF reports to be merged into a single report
-- [ ] Incorporate missed answers iteratively 
-- [ ] Translate user input (if not in English)
+- [ ] Give option to merge multiple PDF reports into a single report
+- [ ] Incorporate missed answers iteratively for better precision
+- [ ] Translate user input (if not in English) for coherency
 - [ ] Report output translation (if needed)
 
 

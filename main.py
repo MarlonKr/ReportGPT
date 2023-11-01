@@ -172,7 +172,8 @@ for final_dir, pdf_name in zip(final_dirs, pdf_names):
     else:
         print("Invalid input. All done.")
 
-
+    # TODO when no info is found, skip rather than create fake report! 
+    # 
     # TODO give user option to merge all reports into one report
     """
     if len(final_dirs) > 1:
@@ -182,3 +183,4 @@ for final_dir, pdf_name in zip(final_dirs, pdf_names):
             print("Merging reports...")
         else:
             print("Not merging reports. Proceeding...")"""
+    
