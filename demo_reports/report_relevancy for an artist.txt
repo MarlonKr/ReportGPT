@@ -1,0 +1,42 @@
+**Relevancy for an Artist**
+
+1. **Social Media and Artistic Categories**
+   - Images created can be shared on Instagram and Twitter, which may be relevant for an artist (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Page 7).
+   - Arts, Design, Entertainment, Sports, and Media category may be relevant for an artist (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Page 15).
+
+2. **Generative AI and Creativity**
+   - ChatGPT has sparked a wave of creativity rarely seen before. Its ability to mimic human dialogue has revealed the true disruptive potential of the technology. Companies can now build specialized image- and language-generating models on top of foundation models, which can be relevant for artists in terms of generating creative content (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Pages 1, 2, 3).
+
+3. **Language Model Models (LLMs) and Artistic Expression**
+   - LLMs can fundamentally transform everything from business to science to society itself, unlocking new performance frontiers, which could be relevant for an artist looking for new creative tools and possibilities.
+   - LLMs can have a positive impact on human creativity and productivity, which could be beneficial for an artist.
+   - LLMs can be fine-tuned for a wide range of tasks, which means they can be repurposed in many different ways, potentially offering new avenues for artistic expression.
+   - LLMs can learn language, context, and intent, and be independently generative and creative, which could be useful for an artist seeking inspiration or assistance in generating ideas (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Pages 3, 4).
+
+4. **Deep Learning and Generative AI Applications**
+   - Breakthroughs in deep learning have allowed advancements in computer vision, which can be relevant for artists using search engines and self-driving cars to classify and detect objects.
+   - Breakthroughs in deep learning have also enabled voice recognition, which can be relevant for artists using popular AI speech assistants to respond to users naturally.
+   - Generative AI applications like DALL-E can be relevant for artists, as they make the technology more accessible in business settings (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Pages 4, 5, 6).
+
+5. **Foundation Models and Data**
+   - Examples of foundation models include DALL-E, which is a model that can generate images from textual descriptions. This could be relevant for an artist who wants to generate visual representations based on their written descriptions.
+   - GPT-4, the successor to previous models, can take both images and text as inputs. This could be useful for an artist who wants to use both visual and textual elements in their creative process.
+   - Data is the fundamental bedrock of generative AI, and artists can potentially use various types of data, such as customer insights or real-time operational data, to inform and inspire their artistic creations (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Page 21).
+
+6. **Generative AI Customization**
+   - Generative AI applications like DALL-E can be relevant for artists as they provide easy-to-consume generative AI capabilities.
+   - Artists can potentially customize these generative AI models with their own data to address their unique artistic needs (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Page 6).
+
+7. **Future of Generative AI**
+   - Fine-tuning: demand for a multidisciplinary set of skills spanning software engineering, psychology, linguistics, art history, literature, and library science.
+   - Foundation models: The market will rapidly mature and diversify as more pre-trained models emerge. New model designs will offer more choices for balancing size, transparency, versatility, and performance.
+   - Generative AI features within modern data platforms will emerge, enhancing adoption at scale (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Page 9).
+
+8. **Generative AI as a Creative Partner**
+   - Generative AI can be an essential creative partner for artists, revealing new ways to reach and appeal to audiences and bringing unprecedented speed and innovation in areas like production design, design research, visual identity, naming, copy generation and testing, and real-time personalization.
+   - Companies are using AI models like DALL·E, Midjourney, and Stable Diffusion for social media visual content generation outreach, which can be relevant for artists looking to create and share visual content on platforms like Instagram and Twitter (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Page 7).
+
+9. **Responsible Use of AI**
+   - The snippet mentions the use of generative AI for deploying AI models, which could be relevant for an artist interested in exploring AI-generated artwork.
+   - The quote by Paul Daugherty about using OpenAI to generate a working website from a napkin drawing could also be of interest to an artist looking for innovative ways to create and showcase their art.
+   - The snippet also highlights the importance of responsible use of AI, which could be relevant for an artist concerned about the ethical implications of using AI in their artistic practice (Accenture-A-New-Era-of-Generative-AI-for-Everyone.pdf, Pages 9, 10).

@@ -1,0 +1,49 @@
+Report on Statistics and Data from Extracted Information
+
+Introduction:
+This report presents an analysis of the extracted information related to statistics and data from various PDFs. The information covers a wide range of topics, including gas volume, risk analysis, cost planning, gas imports, terminal operations, demand calculations, supply options, revenues, and charter rates. The report aims to provide a structured and comprehensive overview of the extracted data.
+
+Gas Volume:
+According to the extracted information, the volume of gas is approximately 11 billion m³ (20230303-lng-bericht.pdf, p. 1).
+
+Risk Analysis:
+The risk analysis indicates a potential increase in regasification demand, posing a risk (20230303-lng-bericht.pdf, pp. 8-9).
+
+Cost Planning:
+The cost planning for the years 2022-2038 is approximately 9.8 billion euros, which is a decrease of around 250 million euros compared to the previous planning (20230303-lng-bericht.pdf, p. 12).
+
+Gas Imports from France:
+Gas imports from France, specifically from LNG landing at French terminals, are expected to reach approximately 2 billion cubic meters by 2025. The commissioning of a deodorization plant in 2026 will allow for the entry of large quantities of French gas into the German market (20230303-lng-bericht.pdf, p. 3).
+
+LNG Import Capacity:
+The LNG import capacity is projected to increase to approximately 54 billion cubic meters (20230303-lng-bericht.pdf, p. 4).
+
+Terminal Operations:
+The onshore terminals in Brunsbüttel and Stade will be prepared for future operation with hydrogen derivatives, especially ammonia. The fixed terminal at the Wilhelmshaven location is designed as a green gas terminal for synthetic methane produced from green hydrogen. These onshore terminals are intended to serve until then (20230303-lng-bericht.pdf, p. 4).
+
+LNG Terminals in Germany:
+Germany has not yet built its own LNG terminals. However, onshore LNG terminals are planned in Brunsbüttel and Stade, with a construction time of approximately 3.5 years (20230303-lng-bericht.pdf, p. 1).
+
+FSRUs:
+Five FSRUs (Floating Storage and Regasification Units) were chartered by the federal government in 2022. The FSRUs in Wilhelmshaven and Brunsbüttel have been put into operation or are nearing completion, while the FSRUs in Stade and Lubmin are scheduled to start operating by the upcoming winter (20230303-lng-bericht.pdf, p. 1).
+
+Demand Calculations:
+Demand sizes have been calculated as the difference between total consumption and previous transit volumes from Germany. It is assumed that countries will source 50% of their gas demand through German import terminals (20230303-lng-bericht.pdf, p. 2).
+
+Gas Flow and Consumption:
+The projected German gas demand for 2022 is 1 billion m³, while the projected demand for 2023 is 8 billion m³. Natural gas consumption in Germany and Europe in 2022 was significantly lower than the previous year, mainly due to high gas prices, temporary measures to reduce consumption, and mild weather. The natural gas consumption is expected to decrease to approximately 74 billion cubic meters by 2030 in a conservative scenario (20230303-lng-bericht.pdf, pp. 2-3, 6).
+
+Gas Supply and Imports:
+Germany expects additional supply needs from countries such as the Czech Republic, Slovakia, Austria, Ukraine, and Moldova. The total additional quantity of gas to be imported is estimated to be approximately 6-7 billion cubic meters per year (20230303-lng-bericht.pdf, p. 2).
+
+Gas Imports from Norway:
+Pipeline deliveries of natural gas from production in Norway increased to approximately 46 billion cubic meters in 2022. It is expected that the level of deliveries from Norway will remain high in the coming years, but further increases are unlikely due to already fully utilized production capacities. Transit volumes are included in the 46 billion cubic meters per year, which are subsequently exported to other countries (20230303-lng-bericht.pdf, p. 3).
+
+Safety Buffer and Gap:
+When all planned projects are realized, an additional safety buffer of over 30 billion cubic meters per year will be available. The gap in gas supply for the German market is approximately 28 billion cubic meters in 2023 and approximately 20 billion cubic meters in 2030 (20230303-lng-bericht.pdf, pp. 4, 8).
+
+Revenues and Charter Rates:
+Revenues for the year 2023 are estimated at 60-90 million euros, with revenues for the following years currently being estimated. The charter rates for the FSRUs are approximately 55 million euros per year (net) per ship (20230303-lng-bericht.pdf, p. 12).
+
+Conclusion:
+The extracted information provides valuable insights into various aspects of gas statistics and data. It covers gas volume, risk analysis, cost planning, gas imports, terminal operations, demand calculations, supply options, revenues, and charter rates. The report highlights the need for LNG terminals in Germany, the projected increase in gas demand, and the importance of gas imports from France and Norway. It also emphasizes the potential risks and challenges associated with gas supply and demand.

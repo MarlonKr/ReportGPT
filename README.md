@@ -55,8 +55,8 @@ The process inherits several token-consuming but quality-enhancing approaches:
 - [ ] Implement redundancy check for crawling and refining processes
 - [x] Give option to merge multiple PDF reports into a single report
 - [ ] Incorporate missed answers iteratively for better precision
-- [ ] Translate user input (if not in English) for coherency
-- [ ] Report output translation (if needed)
+- [x] Translate user input (if not in English) for coherency
+- [x] Report output translation (if needed)
 
 
 ## Contributing

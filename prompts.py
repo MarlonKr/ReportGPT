@@ -178,13 +178,22 @@ def get_prompt_merge_reports(reports_list, user_objective, format):
         reports += f"'''{report}'''\n\n"
 
     prompt = f"""Hello {format} creator assistant, it's nice to have you. 
-What now follows are the {format}(s) that have been created by different {format} creator assistants.
+What now follows are the {format}(s) that have been created by different {format} creator assistants to the topic of {user_objective}.
 Please merge them into one {format}.
 
 {format}(s):
 {reports}
 
-Please, use these {format}s and bring them into a readable and structured {format}. Pleaes make sure to don't forget any information, because I will get punished for your mistakes by my boss.
+Please, use these {format}s and bring them into a single readable, coherent and structured {format}. Pleaes make sure to don't forget any information, because I will get punished for your mistakes by my boss.
 """
     
     return prompt, system_message
+
+
+def get_prompt_translate(user_input, language):
+    system_message = f"You are a Translate Assistant. Your job is to translate the given text into {language} if it isn't already (in this case, ignore the translation task and just repeat the text). Respond only with the translated text, nothing else"
+
+    prompt = f"Please translate the following text into {language} if it's written in another language:\n\n'''{user_input}'''\n\nOnly reply with the translated text, nothing else. If the text is already in {language}, just repeat the text."
+
+    return prompt, system_message
+
