@@ -53,7 +53,7 @@ The process inherits several token-consuming but quality-enhancing approaches:
 - [ ] Provide user interface 
 - [ ] Host via Flask
 - [ ] Implement redundancy check for crawling and refining processes
-- [ ] Give option to merge multiple PDF reports into a single report
+- [x] Give option to merge multiple PDF reports into a single report
 - [ ] Incorporate missed answers iteratively for better precision
 - [ ] Translate user input (if not in English) for coherency
 - [ ] Report output translation (if needed)
