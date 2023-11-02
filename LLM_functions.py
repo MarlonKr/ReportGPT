@@ -3,7 +3,7 @@ from GptCall import gpt_call
 
 def generate_merged_report(reports, user_objective, format, MODELS):
     prompt, system_message = get_prompt_merge_reports(reports, user_objective, format)
-    merged_report = gpt_call(prompt, model=MODELS["reporting"], temperature=0, system_message=system_message, memory=None, timeout=200)
+    merged_report = gpt_call(prompt, model=MODELS["reporting"], temperature=0, system_message=system_message, memory=None, timeout=220)
     
     
     return merged_report
@@ -11,7 +11,7 @@ def generate_merged_report(reports, user_objective, format, MODELS):
 def generate_inital_report(answer_set, user_objective, format, pdf_name, language, MODELS):
 
     prompt, system_message = get_prompt_report(answer_set, user_objective,format)
-    answer = gpt_call(prompt, model=MODELS["reporting"], temperature=0.3, system_message=system_message, memory=None, timeout=200)     
+    answer = gpt_call(prompt, model=MODELS["reporting"], temperature=0.3, system_message=system_message, memory=None, timeout=180)     
   
     
     print(f"{format}: \n###\n {answer} \n###n")
@@ -20,7 +20,7 @@ def generate_inital_report(answer_set, user_objective, format, pdf_name, languag
 
 def generate_refined_report(missing_answers, report, user_objective, format, pdf_name, language, MODELS):
     new_prompt = get_prompt_refine_report(missing_answers, report, user_objective, format)
-    refined_report = gpt_call(new_prompt, model=MODELS["refinement"], temperature=0, system_message=False, memory=None, timeout=120)
+    refined_report = gpt_call(new_prompt, model=MODELS["reporting"], temperature=0, system_message=False, memory=None, timeout=180)
     #if language != "en":
     #    refined_report = translate(refined_report, language, MODELS["translation"])
 

@@ -52,7 +52,7 @@ def check_missing_answers(answer_lists, report, format, MODELS):
         for answer_dict in answer_list:
             answer = answer_dict['answer']
             prompt, system_message = get_prompt_self_supervising(answer, report, format)
-            check_result = gpt_call(prompt, model=MODELS["refinement"], temperature=0, system_message=system_message, memory=None, timeout=80)
+            check_result = gpt_call(prompt, model=MODELS["refinement_checking"], temperature=0, system_message=system_message, memory=None, timeout=80)
             
             if "#FALSE" in check_result:
                 pages = ", ".join(map(str, answer_dict['pages']))
@@ -105,6 +105,7 @@ def handle_user_inputs(MODELS):
     language = input("Enter the language you want the report to be in (standard is 'en'): ") or "en"
 
     # LLM Translation
+    # TODO output "#ENGLISH" rather than repeat the text
     user_objective = translate(user_objective, "english", MODELS)
     if format != "report":
         format = translate(format, "english", MODELS)
@@ -118,15 +119,13 @@ def handle_user_inputs(MODELS):
 # Models
 MODELS = {
     "reporting": "gpt-4",
-    "refinement": "gpt-4",
+    "refinement_checking": "gpt-3.5-turbo",
     "cleaning": "gpt-3.5-turbo",
     "crawl": "gpt-3.5-turbo",
     "translation": "gpt-3.5-turbo",
 }
 
 window_size, overlap, user_objective, format, language = handle_user_inputs(MODELS)
-
-
 
 token_limit = 15000 # token limit for very large files, can stay like this
 
@@ -169,9 +168,7 @@ for final_dir, pdf_name in zip(final_dirs, pdf_names):
 
         else:
             continue 
-    
-    # append initial_report to reports_list
-            
+                
     proceed = input("Do you want to look for missing answers and refine the report? (y/n): ")
     #proceed  = "y"
     if proceed == "n":
