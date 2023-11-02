@@ -137,11 +137,11 @@ pdf_dir = "PdfInfoGatherer/pdfs"
 # Iterate through PDFs and process content; create jsons with answers
 final_dirs, pdf_names = pdf_processing(window_size, overlap, user_objective, MODELS, pdf_dir=pdf_dir, json_dir=json_dir)
 
-#proceed = input("Do you want to proceed? (y/n): ")
+"""proceed = input("Do you want to proceed? (y/n): ")
 proceed = "y"
 if proceed == "n":
     print("All done.")
-    exit()
+    exit()"""
 
 reports_list = []
 for final_dir, pdf_name in zip(final_dirs, pdf_names):
@@ -172,8 +172,8 @@ for final_dir, pdf_name in zip(final_dirs, pdf_names):
     
     # append initial_report to reports_list
             
-    #proceed = input("Do you want to look for missing answers and refine the report? (y/n): ")
-    proceed  = "y"
+    proceed = input("Do you want to look for missing answers and refine the report? (y/n): ")
+    #proceed  = "y"
     if proceed == "n":
         print("done.")
 
