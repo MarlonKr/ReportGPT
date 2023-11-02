@@ -117,8 +117,8 @@ def handle_user_inputs(MODELS):
 
 # Models
 MODELS = {
-    "reporting": "gpt-3.5-turbo-16k",
-    "refinement": "gpt-3.5-turbo-16k",
+    "reporting": "gpt-4",
+    "refinement": "gpt-4",
     "cleaning": "gpt-3.5-turbo",
     "crawl": "gpt-3.5-turbo",
     "translation": "gpt-3.5-turbo",

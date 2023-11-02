@@ -31,6 +31,10 @@ def gpt_call (message_input, model="gpt-3.5-turbo", temperature=0, system_messag
             model = "gpt-3.5-turbo-16k"
             tokenizer = tiktoken.encoding_for_model(model)
 
+        if "gpt-4" in model and len(tokenizer.encode(str(message_input))) > 8150:
+            model = "gpt-3.5-turbo-16k"
+            tokenizer = tiktoken.encoding_for_model(model)
+
         # Set maximum tokens for the given model.
         max_tokens = {
             "gpt-3.5-turbo": 4050,
