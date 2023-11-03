@@ -10,6 +10,93 @@ from Utilities import ensure_directory_exists, save_to_json
 from LLM_functions import clean_and_translate
 
 
+def add_LLM_answer_to_json(json_file_path, user_objective, user_format, MODELS):
+    # load json
+    with open(json_file_path, "r") as json_file:
+        all_chunks_data = json.load(json_file)
+
+    for entry in all_chunks_data:
+        if user_objective in entry and entry.get("user_format") == user_format:
+            print("user_objective and user_format already in chunk")
+            continue
+
+        else:
+            # get chunk_text
+            chunk_text = entry["chunk"]
+            prompt, system_message = get_prompt_crawl(chunk_text, user_objective)
+            answer = gpt_call(
+                prompt,
+                model=MODELS["crawl"],
+                temperature=0,
+                system_message=system_message,
+                memory=None,
+                timeout=25,
+            )
+
+            entry[user_objective] = answer
+            entry["user_format"] = user_format
+
+    with open(json_file_path, "w") as json_file:
+        json.dump(all_chunks_data, json_file)
+
+
+def save_text_and_page_to_json(
+    json_file_path,
+    raw_tokens_list,
+    window_size,
+    overlap,
+    MODELS,
+    pdf,
+    chunk_prep_method=1,
+):
+    iteration = 0
+
+    # decode tokens into text chunks, according to window_size and overlap
+    for chunk_text, pages in decode_tokens_to_text(
+        raw_tokens_list, window_size, overlap, MODELS
+    ):
+        # adjust page numbers to start at 1 instead of 0
+        adjusted_pages = [page + 1 for page in pages]
+
+        # if json_file_path exists (it's a json file)
+        if os.path.exists(json_file_path):
+            with open(json_file_path, "r") as json_file:
+                # load json data into existing_data_to_update, so we can append to it later
+                existing_data_to_update = json.load(json_file)
+                # check if iteration already exists in json
+                if iteration in [
+                    entry["iteration"] for entry in existing_data_to_update
+                ]:
+                    # if yes, skip chunk
+                    print(
+                        f"{json_file_path} already contains iteration {iteration}. Skipping chunk."
+                    )
+                    iteration += 1
+                    continue
+        else:
+            existing_data_to_update = []
+
+        if chunk_prep_method == 1:
+            chunk_text = clean_and_translate(chunk_text, MODELS)
+
+        data = {
+            "pdf": pdf,
+            "chunk": chunk_text,
+            "pages": adjusted_pages,
+            "iteration": iteration,
+        }
+
+        # append data to existing_data_to_update, because saving data to json_file_path will overwrite existing data
+        existing_data_to_update.append(data)
+
+        # save json in pdf_name_window_size_overlap.json
+        save_to_json(
+            json_file_path,
+            existing_data_to_update,
+        )
+        iteration += 1
+
+
 def create_raw_tokens_from_pdf(pdf_path, MODELS):
     """
     This function takes a path to a PDF file and a dictionary of models as input.
@@ -64,10 +151,11 @@ def decode_tokens_to_text(tokens, num_tokens, overlap, MODELS):
         yield chunk_text, chunk_pages
 
 
-def pdf_processing(
+def process_pdf_to_embedding_jsons(
     window_size,
     overlap,
     user_objective,
+    user_format,
     MODELS,
     chunk_prep_method,
     pdf_dir="PdfInfoGatherer/pdfs",
@@ -83,11 +171,13 @@ def pdf_processing(
         )
         exit()
 
-    final_dirs = []
+    json_file_paths = []
 
     pdf_names = []
 
     for pdf in pdfs:
+        print(f"===== {pdf} =====")
+
         pdf_path = os.path.join(pdf_dir, pdf)
 
         # create list of single tokens and their corresponding page numbers
@@ -96,77 +186,30 @@ def pdf_processing(
         pdf_name = re.sub(r'[\\/*?:"<>|]', "_", pdf.split(".")[0])
         pdf_names.append(pdf_name)
 
-        final_dir = os.path.join(json_dir, pdf_name, f"{window_size}_{overlap}")
-        final_dirs.append(final_dir)
+        ensure_directory_exists(os.path.join(json_dir))
 
-        print(f"===== {pdf} =====")
-        iteration = 0
+        json_file_path = os.path.join(
+            json_dir, f"{pdf_name}_{window_size}_{overlap}.json"
+        )
 
-        # decode tokens into text chunks, according to window_size and overlap
-        for chunk_text, pages in decode_tokens_to_text(
-            raw_tokens_list, window_size, overlap, MODELS
-        ):
-            # adjust page numbers to start at 1 instead of 0
-            adjusted_pages = [page + 1 for page in pages]
+        save_text_and_page_to_json(
+            json_file_path,
+            raw_tokens_list,
+            window_size,
+            overlap,
+            MODELS,
+            pdf,
+            chunk_prep_method,
+        )
 
-            # Create path if it doesn't exist - final_dir base
-            ensure_directory_exists(os.path.join(final_dir, "base"))
-
-            base_json_path = os.path.join(final_dir, "base", f"{iteration}.json")
-
-            if os.path.exists(base_json_path):
-                print(f"{base_json_path} already exists")
-                with open(base_json_path) as json_file:
-                    data = json.load(json_file)
-                    prepared_chunk = data["chunk"]
-            else:
-                if chunk_prep_method == 1:
-                    prepared_chunk = clean_and_translate(chunk_text, MODELS)
-                else:
-                    prepared_chunk = chunk_text
-
-                print(f"Prepared chunk: {prepared_chunk}")
-
-                data = {
-                    "pdf": pdf,
-                    "chunk": prepared_chunk,
-                    "pages": adjusted_pages,
-                    "iteration": iteration,
-                }
-
-                save_to_json(base_json_path, data)
-
-            prompt, system_message = get_prompt_crawl(prepared_chunk, user_objective)
-            answer = gpt_call(
-                prompt,
-                model=MODELS["crawl"],
-                temperature=0,
-                system_message=system_message,
-                memory=None,
-                timeout=25,
-            )
-
-            data = {
-                "pdf": pdf,
-                "chunk": prepared_chunk,
-                "pages": adjusted_pages,
-                "iteration": iteration,
-                "answer": answer,
-            }
-
-            # Make directory if it doesn't exist
-            ensure_directory_exists(os.path.join(final_dir, user_objective[:25]))
-
-            save_to_json(
-                os.path.join(final_dir, user_objective[:25], f"{iteration}.json"), data
-            )
-
-            iteration += 1
-            print("-----")
+        add_LLM_answer_to_json(json_file_path, user_objective, user_format, MODELS)
 
         print(f"PDF: {pdf} has been processed.")
         print("==================")
 
+        # append json_file_path to json_file_paths
+        json_file_paths.append(json_file_path)
+
     print("All PDFs have been processed.")
 
-    return final_dirs, pdf_names
+    return json_file_paths, pdf_names

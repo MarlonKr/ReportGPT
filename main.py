@@ -6,13 +6,30 @@ from decouple import config
 
 from GptCall import gpt_call
 from Prompts import *
-from PdfProcessing import pdf_processing
-from Utilities import *
+from PdfProcessing import process_pdf_to_embedding_jsons
+from Utilities import ensure_directory_exists, save_report
 from LLM_functions import *
 from user_input_handler import handle_user_inputs
-from config import MODELS, token_limit, json_dir, pdf_dir
+from config import MODELS, token_limit, dir_json_base, dir_pdf_base
 
 openai.api_key = config("OPENAI_API_KEY")
+
+
+def get_relevant_answers_from_json(json_file):
+    relevant_answers = []
+    with open(json_file) as json_file:
+        all_json_answers = json.load(json_file)
+        for entry in all_json_answers:
+            if entry[user_objective].lower() != "not relevant":
+                # append answer, pages and pdf to relevant_answers
+                relevant_answers.append(
+                    {
+                        "answer": entry[user_objective],
+                        "pages": entry["pages"],
+                        "pdf": entry["pdf"],
+                    }
+                )
+    return relevant_answers
 
 
 def chunk_in_token_limit_lists(answer_list, token_limit, MODELS):
@@ -40,12 +57,10 @@ def chunk_in_token_limit_lists(answer_list, token_limit, MODELS):
                 answer_lists.append(answer_list)
                 answer_list = []
                 token_count = 0
-        print(f"answer_lists: {answer_lists}")
 
     else:  # just one answer_list since token_count below token_limit
         print("token_count < token_limit")
         answer_lists = [answer_list]
-        print(f"answer_lists: {answer_lists}")
 
     return answer_lists
 
@@ -78,8 +93,7 @@ def check_missing_answers(answer_lists, report, format, MODELS):
 def create_answer_list_and_clean_jsons(json_dir, user_objective):
     answer_list = []
 
-    # mkdir if not exists
-    ensure_directory_exists(json_dir + f"/{user_objective[:25]}")
+    # iterate through jsons
 
     for file in os.listdir(json_dir + f"/{user_objective[:25]}"):
         if file.endswith(".json"):
@@ -106,21 +120,22 @@ def create_answer_list_and_clean_jsons(json_dir, user_objective):
     window_size,
     overlap,
     user_objective,
-    format,
+    user_format,
     language,
     chunk_prep_method,
 ) = handle_user_inputs(MODELS)
 
 
 # Iterate through PDFs and process content; create jsons with answers
-final_dirs, pdf_names = pdf_processing(
+json_file_paths, pdf_names = process_pdf_to_embedding_jsons(
     window_size,
     overlap,
     user_objective,
+    user_format,
     MODELS,
     chunk_prep_method,
-    pdf_dir=pdf_dir,
-    json_dir=json_dir,
+    pdf_dir=dir_pdf_base,
+    json_dir=dir_json_base,
 )
 
 """proceed = input("Do you want to proceed? (y/n): ")
@@ -130,32 +145,37 @@ if proceed == "n":
     exit()"""
 
 reports_list = []
-for final_dir, pdf_name in zip(final_dirs, pdf_names):
-    answer_list = create_answer_list_and_clean_jsons(final_dir, user_objective)
+for json_file, pdf_name in zip(json_file_paths, pdf_names):
+    # get answers from json_file that are not "not relevant"
+    relevant_answers = get_relevant_answers_from_json(json_file)
 
     # check token count of answer_list and split into multiple answer_lists if token count is too high for model token limit
-    answer_lists = chunk_in_token_limit_lists(answer_list, token_limit, MODELS)
+    answer_lists = chunk_in_token_limit_lists(relevant_answers, token_limit, MODELS)
 
     if len(answer_lists) > 1:
+        # if token count was above token limit, iterate through answer_lists and generate a report for each answer_list
         temp_reports = []
         for answer_set in answer_lists:
             if not answer_set:  # Skip empty answer_set
                 print("Skipping empty answer_set...")
                 continue
             temp_report = generate_inital_report(
-                answer_set, user_objective, format, pdf_name, MODELS
+                answer_set, user_objective, user_format, pdf_name, MODELS
             )
             temp_reports.append(temp_report)
 
-        report = generate_merged_report(temp_reports, user_objective, format, MODELS)
-        save_report(report, user_objective, format, pdf_name, suffix="")
+        report = generate_merged_report(
+            temp_reports, user_objective, user_format, MODELS
+        )
+        save_report(report, user_objective, user_format, pdf_name, suffix="")
 
     else:
+        # if token count was below token limit, generate a report for the answer_list
         if answer_lists[0]:  # Only proceed if not empty
             report = generate_inital_report(
-                answer_lists[0], user_objective, format, pdf_name, language, MODELS
+                answer_lists[0], user_objective, user_format, pdf_name, language, MODELS
             )
-            save_report(report, user_objective, format, pdf_name, suffix="")
+            save_report(report, user_objective, user_format, pdf_name, suffix="")
 
         else:
             continue
@@ -168,18 +188,22 @@ for final_dir, pdf_name in zip(final_dirs, pdf_names):
         print("done.")
 
     elif proceed == "y":
-        missing_answers = check_missing_answers(answer_lists, report, format, MODELS)
+        missing_answers = check_missing_answers(
+            answer_lists, report, user_format, MODELS
+        )
         if missing_answers != "":
             report = generate_refined_report(
                 missing_answers,
                 report,
                 user_objective,
-                format,
+                user_format,
                 pdf_name,
                 language,
                 MODELS,
             )
-            save_report(report, user_objective, format, pdf_name, suffix="_refined")
+            save_report(
+                report, user_objective, user_format, pdf_name, suffix="_refined"
+            )
 
         else:
             print("No missing answers found. No need to refine the report.")
@@ -196,12 +220,14 @@ if len(reports_list) > 1:
     if merge == "y":
         print("Merging reports...")
         merged_report = generate_merged_report(
-            reports_list, user_objective, format, MODELS
+            reports_list, user_objective, user_format, MODELS
         )
         reports_list.append(merged_report)
         # make pdf_names a string, but cut each pdf_name to 10 characters and split via underscore
         pdf_names = "_".join([pdf_name[:10] for pdf_name in pdf_names])
-        save_report(merged_report, user_objective, format, pdf_names, suffix="_merged")
+        save_report(
+            merged_report, user_objective, user_format, pdf_names, suffix="_merged"
+        )
 
     else:
         print("Not merging reports. Proceeding...")
@@ -216,7 +242,11 @@ if language != "en":
 
         # TODO collect the names of the reports and add them to this function
         save_report(
-            translated_report, user_objective, format, "", suffix=f"_translated_{i}"
+            translated_report,
+            user_objective,
+            user_format,
+            "",
+            suffix=f"_translated_{i}",
         )
         translated_reports_list.append(translated_report)
 

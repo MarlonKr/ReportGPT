@@ -26,5 +26,5 @@ MODELS = {
 token_limit = 15000  # token limit for very large files, can stay like this
 
 # Directories
-json_dir = "PdfInfoGatherer/jsons"
-pdf_dir = "PdfInfoGatherer/pdfs"
+dir_json_base = "PdfInfoGatherer/jsons"
+dir_pdf_base = "PdfInfoGatherer/pdfs"
