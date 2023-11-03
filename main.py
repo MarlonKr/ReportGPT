@@ -12,6 +12,7 @@ from LLM_functions import *
 
 openai.api_key = config('OPENAI_API_KEY')
 
+# TODO Switch from PyPdf4 to PymuPDF
 
 def chunk_in_token_limit_lists(answer_list, token_limit, MODELS):
     # Tokenizer initialization
