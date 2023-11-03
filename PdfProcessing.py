@@ -1,7 +1,7 @@
 import tiktoken
 import os
 import json
-import PyPDF4
+import fitz
 import re
 
 from GptCall import gpt_call
@@ -11,28 +11,23 @@ from LLM_functions import clean_and_translate
 
 
 def create_raw_tokens_from_pdf(pdf_path, MODELS):
-    """
-    Extracts text from a PDF file and encodes it into tokens using the specified model.
-    Each page is encoded separately.
-    Each single token is added to a list along with its corresponding page number.
+    # this function does the following:
+    # 1. splits the text into pages
+    # 2. encodes the text into tokens
+    # 3. adds the page number to each token
+    # 4. flattens the list of lists into a single list
+    # 5. returns the list of tokens
 
-    Args:
-        pdf_path (str): The path to the PDF file.
-        MODELS (dict): A dictionary containing the models to use for encoding.
-
-    Returns:
-        list: A list of tuples containing the encoded tokens and their corresponding page number.
-    """
     with open(pdf_path, "rb") as pdf_file:
-        pdf_reader = PyPDF4.PdfFileReader(pdf_file)
+        pdf = fitz.open(pdf_file)
         tokens_list = []
-        for page_num in range(pdf_reader.numPages):
-            page = pdf_reader.getPage(page_num)
-            text = page.extractText()
+        for page in pdf:
+            text = page.get_text()
+            page = page.number
             page_tokens = list(
                 tiktoken.encoding_for_model(MODELS["cleaning"]).encode(text)
             )
-            tokens_list.extend([(token, page_num) for token in page_tokens])
+            tokens_list.extend([(token, page) for token in page_tokens])
 
     return tokens_list
 
@@ -65,6 +60,7 @@ def pdf_processing(
     overlap,
     user_objective,
     MODELS,
+    chunk_prep_method,
     pdf_dir="PdfInfoGatherer/pdfs",
     json_dir="PdfInfoGatherer/jsons",
 ):
@@ -115,7 +111,12 @@ def pdf_processing(
                     data = json.load(json_file)
                     prepared_chunk = data["chunk"]
             else:
-                prepared_chunk = clean_and_translate(chunk_text, MODELS)
+                if chunk_prep_method == 1:
+                    prepared_chunk = clean_and_translate(chunk_text, MODELS)
+                else:
+                    prepared_chunk = chunk_text
+
+                print(f"Prepared chunk: {prepared_chunk}")
 
                 data = {
                     "pdf": pdf,
