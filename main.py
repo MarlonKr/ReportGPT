@@ -9,10 +9,11 @@ from Prompts import *
 from PdfProcessing import pdf_processing
 from Utilities import *
 from LLM_functions import *
+from user_input_handler import handle_user_inputs
+from config import MODELS, token_limit, json_dir, pdf_dir
 
 openai.api_key = config("OPENAI_API_KEY")
 
-# TODO Switch from PyPdf4 to PymuPDF
 
 def chunk_in_token_limit_lists(answer_list, token_limit, MODELS):
     # Tokenizer initialization
@@ -110,11 +111,6 @@ def create_answer_list_and_clean_jsons(json_dir, user_objective):
     chunk_prep_method,
 ) = handle_user_inputs(MODELS)
 
-token_limit = 15000  # token limit for very large files, can stay like this
-
-# Directories
-json_dir = "PdfInfoGatherer/jsons"
-pdf_dir = "PdfInfoGatherer/pdfs"
 
 # Iterate through PDFs and process content; create jsons with answers
 final_dirs, pdf_names = pdf_processing(

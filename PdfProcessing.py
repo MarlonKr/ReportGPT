@@ -11,13 +11,22 @@ from LLM_functions import clean_and_translate
 
 
 def create_raw_tokens_from_pdf(pdf_path, MODELS):
-    # this function does the following:
-    # 1. splits the text into pages
-    # 2. encodes the text into tokens
-    # 3. adds the page number to each token
-    # 4. flattens the list of lists into a single list
-    # 5. returns the list of tokens
+    """
+    This function takes a path to a PDF file and a dictionary of models as input.
+    It performs the following steps:
+    1. Splits the text into pages
+    2. Encodes the text into tokens
+    3. Adds the page number to each token
+    4. Flattens the list of lists into a single list
+    5. Returns the list of tokens
 
+    Args:
+        pdf_path (str): The path to the PDF file.
+        MODELS (dict): A dictionary of models.
+
+    Returns:
+        list: A list of tokens.
+    """
     with open(pdf_path, "rb") as pdf_file:
         pdf = fitz.open(pdf_file)
         tokens_list = []
