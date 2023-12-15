@@ -1,7 +1,7 @@
 import openai
 
 # from openai import OpenAI
-from decouple import config
+from config import timeout_default
 import tiktoken
 
 # client = OpenAI(api_key=config("OPENAI_API_KEY"))
@@ -12,7 +12,7 @@ def gpt_call(
     model="gpt-3.5-turbo-1106",
     temperature=0,
     system_message=False,
-    timeout=config("OPENAI_TIMEOUT"),
+    timeout=timeout_default,
 ):
     # Function to truncate a string to the maximum token count.
     def truncate_string(message):

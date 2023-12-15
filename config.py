@@ -13,17 +13,18 @@ class ProductionConfig(Config):
     DEBUG = False
 
 
-# Models
+# Model assignments for different tasks
 MODELS = {
-    "reporting": "gpt-4-1106-preview",
-    "refinement_checking": "gpt-3.5-turbo-1106",
-    "cleaning": "gpt-3.5-turbo-1106",
-    "crawl": "gpt-3.5-turbo-1106",
-    "translation": "gpt-3.5-turbo-1106",
+    "reporting": config("REPORTING"),
+    "refinement_checking": config("REFINEMENT_CHECKING"),
+    "cleaning": config("CLEANING"),
+    "crawl": config("CRAWL"),
+    "translation": config("TRANSLATION"),
 }
 
 
-token_limit = 15000  # token limit for very large files, can stay like this
+token_limit = config("TOKEN_LIMIT")
+timeout_default = config("OPENAI_TIMEOUT")
 
 # Directories
 dir_json_base = "PdfInfoGatherer/jsons"

@@ -50,9 +50,9 @@ def chunk_in_token_limit_lists(answer_list, token_limit, MODELS):
         answer_lists = []
         token_count = 0
         for answer in answer_list:
-            if token_count + len(tokenizer.encode(answer)) < token_limit:
+            if token_count + len(tokenizer.encode(str(answer))) < token_limit:
                 answer_list.append(answer)
-                token_count += len(tokenizer.encode(answer))
+                token_count += len(tokenizer.encode(str(answer)))
             else:
                 answer_lists.append(answer_list)
                 answer_list = []
@@ -159,7 +159,7 @@ for json_file, pdf_name in zip(json_file_paths, pdf_names):
                 print("Skipping empty answer_set...")
                 continue
             temp_report = generate_inital_report(
-                answer_set, user_objective, user_format, pdf_name, MODELS
+                answer_set, user_objective, user_format, pdf_name, language, MODELS
             )
             temp_reports.append(temp_report)
 
