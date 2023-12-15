@@ -77,7 +77,6 @@ def check_missing_answers(answer_lists, report, format, MODELS):
                 model=MODELS["refinement_checking"],
                 temperature=0,
                 system_message=system_message,
-                memory=None,
                 timeout=80,
             )
 

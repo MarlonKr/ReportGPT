@@ -15,11 +15,11 @@ class ProductionConfig(Config):
 
 # Models
 MODELS = {
-    "reporting": "gpt-4",
-    "refinement_checking": "gpt-3.5-turbo",
-    "cleaning": "gpt-3.5-turbo",
-    "crawl": "gpt-3.5-turbo",
-    "translation": "gpt-3.5-turbo",
+    "reporting": "gpt-4-1106-preview",
+    "refinement_checking": "gpt-3.5-turbo-1106",
+    "cleaning": "gpt-3.5-turbo-1106",
+    "crawl": "gpt-3.5-turbo-1106",
+    "translation": "gpt-3.5-turbo-1106",
 }
 
 

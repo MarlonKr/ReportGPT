@@ -19,3 +19,4 @@ PdfInfoGatherer/*report_*.txt
 *.pdf
 
 ContextAwareChunkSplitting.py
+PdfInfoGatherer/reports/

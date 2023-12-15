@@ -29,7 +29,6 @@ def add_LLM_answer_to_json(json_file_path, user_objective, user_format, MODELS):
                 model=MODELS["crawl"],
                 temperature=0,
                 system_message=system_message,
-                memory=None,
                 timeout=25,
             )
 

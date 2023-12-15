@@ -1,14 +1,18 @@
 import openai
+
+# from openai import OpenAI
+from decouple import config
 import tiktoken
+
+# client = OpenAI(api_key=config("OPENAI_API_KEY"))
 
 
 def gpt_call(
     message_input,
-    model="gpt-3.5-turbo",
+    model="gpt-3.5-turbo-1106",
     temperature=0,
     system_message=False,
-    memory=None,
-    timeout=None,
+    timeout=config("OPENAI_TIMEOUT"),
 ):
     # Function to truncate a string to the maximum token count.
     def truncate_string(message):
@@ -37,20 +41,12 @@ def gpt_call(
 
     # Initialize tokenizer .
     tokenizer = tiktoken.encoding_for_model(model)
-    # if len(tokenizer.encode(message_input)) > 4050: use gpt-3.5-turbo-16k
-    if "gpt-3.5" in model and len(tokenizer.encode(str(message_input))) > 4050:
-        model = "gpt-3.5-turbo-16k"
-        tokenizer = tiktoken.encoding_for_model(model)
-
-    if "gpt-4" in model and len(tokenizer.encode(str(message_input))) > 8150:
-        model = "gpt-3.5-turbo-16k"
-        tokenizer = tiktoken.encoding_for_model(model)
 
     # Set maximum tokens for the given model.
     max_tokens = {
-        "gpt-3.5-turbo": 4050,
-        "gpt-4": 8150,
-        "gpt-3.5-turbo-16k": 16000,
+        "gpt-3.5-turbo-1106": 16000,
+        "gpt-4-vision-preview": 127000,
+        "gpt-4-1106-preview": 127000,
     }.get(model)
 
     # If system_message is provided, subtract its token count from max_tokens.
@@ -79,10 +75,8 @@ def gpt_call(
     # Make chat requests until successful, up to a maximum of 5 retries.
     response = None
     # Use Default Timeout if None was given
-    if timeout is None:
-        set_timeout = 200
-    else:
-        set_timeout = timeout
+    print("trying to get response")
+
     for _ in range(5):
         try:
             chat_kwargs = {
@@ -90,14 +84,13 @@ def gpt_call(
                 "messages": final_message,
                 "temperature": temperature,
             }
-            response = openai.ChatCompletion.create(
-                request_timeout=set_timeout, **chat_kwargs
-            )
+            response = openai.chat.completions.create(timeout=timeout, **chat_kwargs)
             break  # Break if request is successful.
 
-        except openai.error.Timeout as timeout_err:
+        except TimeoutError as timeout_err:
+            print(timeout_err)
             print("Encountered a timeout error. Not retrying.")
-            # Dont break, until we have retry button in the UI
+            # Don't break, until we have retry button in the UI
             # break  # Break immediately if it's a timeout error.
 
         except Exception as e:
@@ -106,6 +99,7 @@ def gpt_call(
             # time.sleep(2)  # Retry after 2 seconds.
 
     if not response:
+        print("Unable to get a response from the model")
         raise Exception("Unable to get a response from the model")
 
     response = response.choices[0].message.content

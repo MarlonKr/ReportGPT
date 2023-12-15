@@ -99,7 +99,7 @@ client is looking for: '{user_objective}'. What does the PDF snippet tell you ab
 
 
 def get_prompt_self_supervising(answer, report, format):
-    system_message = f"You are a Supervising Assistant. Your job is to check whether a certain information is present in the {format}. Your objective is to output a number (#TRUE or #FALSE) that indicates whether the information is sufficently present in the {format} (#TRUE) or not (#FALSE)."
+    system_message = f"You are a Supervising Assistant. Your job is to check whether a certain information is present in the {format}. Your objective is to output a boolean (#TRUE or #FALSE) that indicates whether the information is sufficently present in the {format} (#TRUE) or not (#FALSE)."
 
     prompt = f"""Is the following information sufficently present in the {format}?
 
@@ -143,7 +143,7 @@ Extracted information:
 {answer_list}
 '''
 
-Use this extracted information and bring it into a readable and structured {format}. Pleaes make sure to don't forget any information, because I will get punished for your mistakes by my boss.
+Use this extracted information and bring it into a readable and structured {format}. Please make sure to don't forget any information, because I will get punished for your mistakes by my boss.
 """
 
     return prompt, system_message

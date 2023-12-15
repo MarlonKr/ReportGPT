@@ -9,7 +9,6 @@ def generate_merged_report(reports, user_objective, format, MODELS):
         model=MODELS["reporting"],
         temperature=0,
         system_message=system_message,
-        memory=None,
         timeout=220,
     )
 
@@ -25,7 +24,6 @@ def generate_inital_report(
         model=MODELS["reporting"],
         temperature=0.3,
         system_message=system_message,
-        memory=None,
         timeout=180,
     )
 
@@ -43,7 +41,6 @@ def generate_refined_report(
         model=MODELS["reporting"],
         temperature=0,
         system_message=False,
-        memory=None,
         timeout=180,
     )
     # if language != "en":
@@ -59,7 +56,6 @@ def translate(text, language, MODELS):
         model=MODELS["translation"],
         temperature=0,
         system_message=system_message,
-        memory=None,
         timeout=120,
     )
 
@@ -73,7 +69,6 @@ def clean_and_translate(text, MODELS):
         model=MODELS["cleaning"],
         temperature=0,
         system_message=system_message,
-        memory=None,
         timeout=60,
     )
     return cleaned_text
@@ -84,10 +79,9 @@ def clean_text_with_gpt2(text):
     prompt = f"Please clean the following text:\n'''{text}'''"
     cleaned_text = gpt_call(
         prompt,
-        model="gpt-3.5-turbo",
+        model="gpt-3.5-turbo-1106",
         temperature=0,
         system_message=system_message,
-        memory=None,
         timeout=60,
     )
     return cleaned_text
