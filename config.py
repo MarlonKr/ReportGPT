@@ -23,8 +23,8 @@ MODELS = {
 }
 
 
-token_limit = config("TOKEN_LIMIT")
-timeout_default = config("OPENAI_TIMEOUT")
+token_limit = int(config("TOKEN_LIMIT"))
+timeout_default = int(config("OPENAI_TIMEOUT"))
 
 # Directories
 dir_json_base = "PdfInfoGatherer/jsons"

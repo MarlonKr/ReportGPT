@@ -51,7 +51,7 @@ The process inherits several token-consuming but quality-enhancing approaches:
 
 ## Ideas and TODO's
 - [ ] Provide user interface 
-- [ ] Create Flask environment
+- [ ] Summary module that summarizes the whole document more reliably
 - [ ] Implement redundancy check for crawling and refining processes
 - [x] Give option to merge multiple PDF reports into a single report
 - [ ] Incorporate missed answers iteratively for better precision

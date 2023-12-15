@@ -47,22 +47,26 @@ def chunk_in_token_limit_lists(answer_list, token_limit, MODELS):
         token_count > token_limit
     ):  # split answer_list into multiple answer_lists with a token_count of token_limit
         print("token_count > token_limit")
-        answer_lists = []
+        lists_of_lists = []
+        temp_list = []
         token_count = 0
         for answer in answer_list:
             if token_count + len(tokenizer.encode(str(answer))) < token_limit:
-                answer_list.append(answer)
+                temp_list.append(answer)
                 token_count += len(tokenizer.encode(str(answer)))
             else:
-                answer_lists.append(answer_list)
-                answer_list = []
+                lists_of_lists.append(temp_list)
+                temp_list = []
                 token_count = 0
+
+        if temp_list != []:
+            lists_of_lists.append(temp_list)
 
     else:  # just one answer_list since token_count below token_limit
         print("token_count < token_limit")
-        answer_lists = [answer_list]
+        lists_of_lists = [answer_list]
 
-    return answer_lists
+    return lists_of_lists
 
 
 def check_missing_answers(answer_lists, report, format, MODELS):
