@@ -50,6 +50,7 @@ The process inherits several token-consuming but quality-enhancing approaches:
 
 
 ## Ideas and TODO's
+- [ ] Added text-embedded similarity search option, either with full text or with cached answers for previously run reports.
 - [ ] Provide user interface 
 - [ ] Summary module that summarizes the whole document more reliably
 - [ ] Implement redundancy check for crawling and refining processes
