@@ -57,6 +57,7 @@ def chunk_in_token_limit_lists(answer_list, token_limit, MODELS):
             else:
                 lists_of_lists.append(temp_list)
                 temp_list = []
+                temp_list.append(answer)
                 token_count = 0
 
         if temp_list != []:
