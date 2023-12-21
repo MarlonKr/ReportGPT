@@ -15,17 +15,15 @@ class ProductionConfig(Config):
 
 # Model assignments for different tasks
 MODELS = {
-    "reporting": config("REPORTING"),
-    "refinement_checking": config("REFINEMENT_CHECKING"),
-    "cleaning": config("CLEANING"),
-    "crawl": config("CRAWL"),
-    "translation": config("TRANSLATION"),
+    "reporting": "gpt-3.5-turbo-1106",
+    "refinement_checking": "gpt-3.5-turbo-1106",
+    "cleaning": "gpt-3.5-turbo-1106",
+    "crawl": "gpt-3.5-turbo-1106",
+    "translation": "gpt-3.5-turbo-1106",
 }
 
-
-token_limit = int(config("TOKEN_LIMIT"))
-timeout_default = int(config("OPENAI_TIMEOUT"))
-
+token_limit = 15000
+timeout_default = 210
 # Directories
 dir_json_base = "PdfInfoGatherer/jsons"
 dir_pdf_base = "PdfInfoGatherer/pdfs"

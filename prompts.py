@@ -197,7 +197,7 @@ Please, use these {format}s and bring them into a single readable, coherent and 
 
 
 def get_prompt_translate(user_input, language):
-    system_message = f"You are a Translate Assistant. Your job is to translate the given text into {language} if it isn't already (in this case, ignore the translation task and just repeat the text). Respond only with the translated text, nothing else"
+    system_message = f"You are a Translate Assistant. Your job is to translate the given text into {language}. If the text is already written in {language}, ignore the translation task and just repeat the text as it is in {language}). Respond only with the translated text, nothing else"
 
     prompt = f"Please translate the following text into {language} if it's written in another language:\n\n'''{user_input}'''\n\nOnly reply with the translated text, nothing else. If the text is already in {language}, just repeat the text."
 
